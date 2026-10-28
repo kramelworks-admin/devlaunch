@@ -1,5 +1,9 @@
 name: ci-devlaunch-api
 
+defaults:
+  run:
+    working-directory: services/examples/kramelworks-devlaunch-api
+
 on:
   push:
     branches:
