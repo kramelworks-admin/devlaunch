@@ -1,0 +1,14 @@
+name: kramelworks-devlaunch-api
+services:
+  api:
+    build: .
+    image: kws-devlaunch-api:latest
+    container_name: kws-devlaunch-api
+    ports:
+      - "80:8001"
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://localhost:8001').then(res => {if(!res.ok){process.exitCode = 1}}).catch(() => {process.exitCode = 1})"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
