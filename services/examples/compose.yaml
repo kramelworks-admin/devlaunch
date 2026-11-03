@@ -1,25 +1,18 @@
-name: kramelworks-devlaunch-api
+name: kramelworks-devlaunch
+
 services:
   api:
-    build:
-      context: kramelworks-devlaunch-api
-    image: kws-devlaunch-api:latest
+    image: ghcr.io/kramelworks-admin/kws-devlaunch-example-api:latest
     container_name: kws-devlaunch-api
-    # FORÇA a API a rodar o arquivo do servidor HTTP
-    command: ["node", "dist/server.js"] # <-- Altere 'dist/server.js' para o caminho real do arquivo da sua API
+    restart: unless-stopped
     networks:
       - frontend
       - backend
-    tty: true
 
   client:
-    build:
-      context: kramelworks-devlaunch-client
-    image: kws-devlaunch-client:latest
+    image: ghcr.io/kramelworks-admin/kws-devlaunch-example-client:latest
     container_name: kws-devlaunch-client
-    # FORÇA o cliente a rodar o script do loop de requisições
-    command: ["node", "dist/client.js"] # <-- Altere 'dist/client.js' para o caminho real do arquivo do seu cliente
-    restart: always
+    restart: unless-stopped
     environment:
       - API_URL=http://api:8001
     depends_on:
