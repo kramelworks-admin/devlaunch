@@ -101,15 +101,15 @@ jobs:
           tags: |
             ghcr.io/kramelworks-admin/kws-devlaunch-example-client:latest
             ghcr.io/kramelworks-admin/kws-devlaunch-example-client:${{ github.sha }}
-
-  test-runner:
-    name: Test Debian Runner
+  deploy:
+    name: Deploy to Debian
+    needs: publish
     runs-on: self-hosted
+
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+
+    timeout-minutes: 10
+
     steps:
-        - name: Identify runner
-          run: |
-            echo "Runner executando no Debian"
-            hostname
-            whoami
-            docker --version
-            docker compose version
+      - name: Deploy application
+        run: /home/kamelworks/devlaunch/deploy.sh
