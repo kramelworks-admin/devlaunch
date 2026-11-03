@@ -1,0 +1,56 @@
+name: kramelworks-devlaunch-api
+services:
+  api:
+    build:
+      context: kramelworks-devlaunch-api
+    image: kws-devlaunch-api:latest
+    container_name: kws-devlaunch-api
+    # FORÇA a API a rodar o arquivo do servidor HTTP
+    command: ["node", "dist/server.js"] # <-- Altere 'dist/server.js' para o caminho real do arquivo da sua API
+    networks:
+      - frontend
+      - backend
+    tty: true
+
+  client:
+    build:
+      context: kramelworks-devlaunch-client
+    image: kws-devlaunch-client:latest
+    container_name: kws-devlaunch-client
+    # FORÇA o cliente a rodar o script do loop de requisições
+    command: ["node", "dist/client.js"] # <-- Altere 'dist/client.js' para o caminho real do arquivo do seu cliente
+    restart: always
+    environment:
+      - API_URL=http://api:8001
+    depends_on:
+      - api
+    ports:
+      - "80:8000"
+    networks:
+      - frontend
+
+  db:
+    image: postgres:17
+    container_name: kws-devlaunch-db
+    environment:
+      POSTGRES_DB: devlaunch
+      POSTGRES_USER: devlaunch
+      POSTGRES_PASSWORD: devlaunch_lab
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - backend
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U devlaunch -d devlaunch"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+networks:
+  frontend:
+    driver: bridge
+  backend:
+    driver: bridge
+
+volumes:
+  postgres_data:

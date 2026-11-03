@@ -26,4 +26,4 @@ USER node
 
 EXPOSE 8001
 
-CMD ["node", "dist/main.js"]
+CMD ["node", "dist/server.js"]

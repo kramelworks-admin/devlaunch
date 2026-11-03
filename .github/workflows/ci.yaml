@@ -1,8 +1,5 @@
-name: ci-devlaunch-api
 
-defaults:
-  run:
-    working-directory: services/examples/kramelworks-devlaunch-api
+name: ci-devlaunch
 
 on:
   push:
@@ -13,23 +10,60 @@ on:
       - main
 
 jobs:
-  build:
+  build-api:
+    name: Build API
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
       - name: Set up Node.js
-        uses: actions/setup-node@v7
+        uses: actions/setup-node@v4
         with:
           node-version: "24.x"
+          cache: npm
+          cache-dependency-path: services/examples/kramelworks-devlaunch-api/package-lock.json
+
       - name: Install dependencies
+        working-directory: services/examples/kramelworks-devlaunch-api
         run: npm ci
-      - name: Build
+
+      - name: Build API
+        working-directory: services/examples/kramelworks-devlaunch-api
+        run: npm run build
+
+  build-client:
+    name: Build Client
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24.x"
+          cache: npm
+          cache-dependency-path: services/examples/kramelworks-devlaunch-client/package-lock.json
+
+      - name: Install dependencies
+        working-directory: services/examples/kramelworks-devlaunch-client
+        run: npm ci
+
+      - name: Build Client
+        working-directory: services/examples/kramelworks-devlaunch-client
         run: npm run build
 
   publish:
-    needs: build
+    name: Publish Docker images
+    needs:
+      - build-api
+      - build-client
+
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+
     runs-on: ubuntu-latest
 
     permissions:
@@ -50,7 +84,7 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build and publish image
+      - name: Build and publish API
         uses: docker/build-push-action@v6
         with:
           context: ./services/examples/kramelworks-devlaunch-api
@@ -58,3 +92,12 @@ jobs:
           tags: |
             ghcr.io/kramelworks-admin/kws-devlaunch-example-api:latest
             ghcr.io/kramelworks-admin/kws-devlaunch-example-api:${{ github.sha }}
+
+      - name: Build and publish Client
+        uses: docker/build-push-action@v6
+        with:
+          context: ./services/examples/kramelworks-devlaunch-client
+          push: true
+          tags: |
+            ghcr.io/kramelworks-admin/kws-devlaunch-example-client:latest
+            ghcr.io/kramelworks-admin/kws-devlaunch-example-client:${{ github.sha }}
