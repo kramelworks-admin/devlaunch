@@ -29,28 +29,8 @@ services:
     networks:
       - frontend
 
-  db:
-    image: postgres:17
-    container_name: kws-devlaunch-db
-    environment:
-      POSTGRES_DB: devlaunch
-      POSTGRES_USER: devlaunch
-      POSTGRES_PASSWORD: devlaunch_lab
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    networks:
-      - backend
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U devlaunch -d devlaunch"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
 networks:
   frontend:
     driver: bridge
   backend:
     driver: bridge
-
-volumes:
-  postgres_data:

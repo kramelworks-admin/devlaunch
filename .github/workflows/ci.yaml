@@ -101,3 +101,15 @@ jobs:
           tags: |
             ghcr.io/kramelworks-admin/kws-devlaunch-example-client:latest
             ghcr.io/kramelworks-admin/kws-devlaunch-example-client:${{ github.sha }}
+
+  test-runner:
+    name: Test Debian Runner
+    runs-on: self-hosted
+    steps:
+        - name: Identify runner
+          run: |
+            echo "Runner executando no Debian"
+            hostname
+            whoami
+            docker --version
+            docker compose version
