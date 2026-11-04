@@ -5,14 +5,20 @@ set -euo pipefail
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 cd "$SCRIPT_DIR"
 
+COMPOSE=(
+  sudo -n docker compose
+  --env-file "$SCRIPT_DIR/.env.production.example"
+  -f "$SCRIPT_DIR/compose.yaml"
+)
+
 echo "==> Pulling updated images"
-sudo -n docker compose pull
+"${COMPOSE[@]}" pull
 
 echo "==> Updating services"
-sudo -n docker compose up -d --remove-orphans
+"${COMPOSE[@]}" up -d --remove-orphans
 
 echo "==> Checking containers"
-sudo -n docker compose ps
+"${COMPOSE[@]}" ps
 
 check_endpoint() {
   local url="$1"
