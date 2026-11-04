@@ -7,7 +7,7 @@ cd "$SCRIPT_DIR"
 
 COMPOSE=(
   sudo -n docker compose
-  --env-file "$SCRIPT_DIR/.env.production.example"
+  --env-file "$SCRIPT_DIR/.env"
   -f "$SCRIPT_DIR/compose.yaml"
 )
 
