@@ -21,7 +21,6 @@ services:
       - "80:8000"
     networks:
       - frontend
-      - backend
 
 networks:
   frontend:
